@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\WorkspaceMemberRole;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -11,35 +13,20 @@ use Laravel\Sanctum\HasApiTokens;
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable,HasApiTokens;
+    use HasFactory, Notifiable, HasApiTokens;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'name',
         'email',
         'password',
-        'is_admin',
+        'avatar_url',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
@@ -48,8 +35,70 @@ class User extends Authenticatable
         ];
     }
 
-    public function tarefas()
+    // -------------------------------------------------------------------------
+    // Relationships
+    // -------------------------------------------------------------------------
+
+    /**
+     * Workspaces dos quais o usuário é proprietário.
+     */
+    public function ownedWorkspaces(): HasMany
     {
-        return $this->hasMany(Tarefa::class);
+        return $this->hasMany(Workspace::class, 'owner_id');
+    }
+
+    /**
+     * Todos os workspaces dos quais o usuário é membro (incluindo os que possui).
+     */
+    public function workspaces(): BelongsToMany
+    {
+        return $this->belongsToMany(Workspace::class, 'workspace_members')
+                    ->using(WorkspaceMember::class)
+                    ->withPivot('role', 'invited_by', 'joined_at')
+                    ->withTimestamps();
+    }
+
+    /**
+     * Tarefas criadas pelo usuário.
+     */
+    public function createdTasks(): HasMany
+    {
+        return $this->hasMany(Task::class, 'created_by');
+    }
+
+    /**
+     * Tarefas atribuídas ao usuário.
+     */
+    public function assignedTasks(): HasMany
+    {
+        return $this->hasMany(Task::class, 'assigned_to');
+    }
+
+    // -------------------------------------------------------------------------
+    // Helpers
+    // -------------------------------------------------------------------------
+
+    /**
+     * Retorna o papel do usuário em um workspace específico.
+     */
+    public function roleIn(Workspace $workspace): ?WorkspaceMemberRole
+    {
+        $member = $this->workspaces()
+                       ->where('workspace_id', $workspace->id)
+                       ->first();
+
+        if (! $member) {
+            return null;
+        }
+
+        return WorkspaceMemberRole::from($member->pivot->role);
+    }
+
+    /**
+     * Verifica se o usuário pertence a um workspace.
+     */
+    public function isMemberOf(Workspace $workspace): bool
+    {
+        return $this->workspaces()->where('workspace_id', $workspace->id)->exists();
     }
 }
