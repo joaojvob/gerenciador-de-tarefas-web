@@ -1,34 +1,39 @@
 <?php
 
+use App\Enums\TaskPriority;
+use App\Enums\TaskStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::create('tarefas', function (Blueprint $table) {
+        Schema::create('tasks', function (Blueprint $table) {
             $table->id();
-            $table->string('titulo');
-            $table->text('descricao')->nullable();
-            $table->enum('prioridade', ['Baixa', 'Média', 'Alta'])->default('Média');
-            $table->enum('status', ['Pendente', 'Em Andamento', 'Concluida', 'Cancelada'])->default('Pendente');
-            $table->dateTime('data_vencimento')->nullable();
-            $table->integer('ordem')->default(0);
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('workspace_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('created_by')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('assigned_to')->nullable()->constrained('users')->nullOnDelete();
+            $table->string('title');
+            $table->text('description')->nullable();
+            $table->string('priority')->default(TaskPriority::Medium->value);
+            $table->string('status')->default(TaskStatus::Pending->value);
+            $table->timestamp('due_date')->nullable();
+            $table->timestamp('completed_at')->nullable();
+            $table->unsignedInteger('order')->default(0);
+            $table->json('metadata')->nullable();
             $table->timestamps();
+            $table->softDeletes();
+
+            $table->index(['workspace_id', 'status']);
+            $table->index(['workspace_id', 'assigned_to']);
+            $table->index(['workspace_id', 'due_date']);
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('tarefas');
+        Schema::dropIfExists('tasks');
     }
 };
