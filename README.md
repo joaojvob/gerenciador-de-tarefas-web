@@ -16,8 +16,10 @@ Refatoração completa de um gerenciador de tarefas monolítico para uma API ent
 - **Actions** para encapsulamento da lógica de negócio (Skinny Controllers)
 - **Form Requests** para validação desacoplada
 - **API Resources** para contratos JSON padronizados
-- **Policies** para autorização granular por recurso
+- **Policies (ABAC & RBAC)** para autorização granular cruzando Papéis e Assinaturas (Billing)
 - **Multi-tenancy** via Workspaces com sistema de roles por membro
+- **Privilégios Globais** com camada Super Admin Bypass
+- **Máquina de Estados (Kanban)** integrada de ponta a ponta
 - **Backed Enums** (PHP 8.1+) para tipagem segura de estados e prioridades
 - **Jobs & Queues** para processamentos assíncronos
 - **Feature Tests** com Pest
@@ -144,8 +146,15 @@ php artisan serve
 | `GET` | `/api/workspaces/{slug}/tasks` | Lista tarefas do workspace |
 | `POST` | `/api/workspaces/{slug}/tasks` | Cria tarefa |
 | `GET` | `/api/workspaces/{slug}/tasks/{id}` | Detalhes da tarefa |
-| `PUT` | `/api/workspaces/{slug}/tasks/{id}` | Atualiza tarefa |
+| `PUT` | `/api/workspaces/{slug}/tasks/{id}` | Atualiza tarefa (restrito dependendo da Role) |
 | `DELETE` | `/api/workspaces/{slug}/tasks/{id}` | Remove tarefa |
+
+### SaaS Admin (Governança Global)
+
+| Método | Rota | Descrição |
+|---|---|---|
+| `GET` | `/api/admin/workspaces/dashboard` | Retorna métricas globais da plataforma (BI) |
+| `GET` | `/api/admin/workspaces` | Lista todos os workspaces ignorando Tenants |
 
 ---
 
@@ -157,7 +166,8 @@ php artisan serve
 - [x] Etapa 4 — Controllers, API Resources e Rotas
 - [x] Etapa 5 — Feature Tests com Pest
 - [x] Etapa 6 — Jobs, Filas e Notificações
-- [x] Etapa 7 — Frontend SPA em React
+- [x] Etapa 7 — Frontend SPA em React (Tailwind/Vite)
+- [x] Etapa 8 — Governança B2B (Super Admin, ABAC, Board Kanban)
 
 ---
 
