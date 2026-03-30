@@ -10,8 +10,10 @@ use Illuminate\Support\Facades\Log;
 
 class InviteMemberAction
 {
+    use App\Jobs\SendWorkspaceInvitationJob;
+
     /**
-     * Adiciona um usuário como membro do workspace.
+     * Adiciona um usuário como membro do workspace e envia convite assíncrono.
      */
     public function execute(InviteMemberRequest $request, Workspace $workspace, User $inviter): WorkspaceMember
     {
@@ -29,6 +31,8 @@ class InviteMemberAction
             'user_id'      => $invitee->id,
             'invited_by'   => $inviter->id,
         ]);
+
+        SendWorkspaceInvitationJob::dispatch($workspace, $invitee, $inviter);
 
         return $member;
     }

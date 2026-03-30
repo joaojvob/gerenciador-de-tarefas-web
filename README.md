@@ -152,11 +152,11 @@ php artisan serve
 ## Roadmap
 
 - [x] Etapa 1 — Estrutura de diretórios + Migrations multi-tenant + Enums
-- [ ] Etapa 2 — Models, Relationships e Policies
-- [ ] Etapa 3 — Form Requests e Actions
-- [ ] Etapa 4 — Controllers, API Resources e Rotas
-- [ ] Etapa 5 — Jobs, Filas e Notificações
-- [ ] Etapa 6 — Feature Tests com Pest
+- [x] Etapa 2 — Models, Relationships e Policies
+- [x] Etapa 3 — Form Requests e Actions
+- [x] Etapa 4 — Controllers, API Resources e Rotas
+- [x] Etapa 5 — Feature Tests com Pest
+- [x] Etapa 6 — Jobs, Filas e Notificações
 - [ ] Etapa 7 — Frontend SPA em React
 
 ---
