@@ -157,7 +157,7 @@ php artisan serve
 - [x] Etapa 4 — Controllers, API Resources e Rotas
 - [x] Etapa 5 — Feature Tests com Pest
 - [x] Etapa 6 — Jobs, Filas e Notificações
-- [ ] Etapa 7 — Frontend SPA em React
+- [x] Etapa 7 — Frontend SPA em React
 
 ---
 

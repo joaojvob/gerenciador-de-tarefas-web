@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Api\Task;
 
-use App\Actions\Task\CreateTaskAction;
 use App\Actions\Task\DeleteTaskAction;
 use App\Actions\Task\UpdateTaskAction;
+use App\Enums\WorkspaceMemberRole;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Task\StoreTaskRequest;
 use App\Http\Requests\Task\UpdateTaskRequest;
@@ -21,10 +21,19 @@ class TaskController extends Controller
     {
         $this->authorize('viewAny', [Task::class, $workspace]);
 
-        $tasks = $workspace->tasks()
-            ->with(['creator', 'assignee'])
-            ->ordered()
-            ->get();
+        $user = $request->user();
+        $query = $workspace->tasks()->with(['creator', 'assignee']);
+
+        if (! $user->is_super_admin) {
+            $role = $user->roleIn($workspace);
+            $isManager = $role?->isAtLeast(WorkspaceMemberRole::Admin);
+
+            if (! $isManager) {
+                $query->where('assigned_to', $user->id);
+            }
+        }
+
+        $tasks = $query->ordered()->get();
 
         return TaskResource::collection($tasks);
     }

@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\Task\TaskController;
 use App\Http\Controllers\Api\Workspace\WorkspaceController;
 use App\Http\Controllers\Api\Workspace\WorkspaceMemberController;
+use App\Http\Controllers\Api\Admin\AdminWorkspaceController;
 use Illuminate\Support\Facades\Route;
 
 // -----------------------------------------------------------------------------
@@ -46,5 +47,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('{task}',   [TaskController::class, 'show']);
         Route::patch('{task}', [TaskController::class, 'update']);
         Route::delete('{task}',[TaskController::class, 'destroy']);
+    });
+
+    // SaaS Global Area (Super Admin)
+    Route::prefix('admin/workspaces')->group(function () {
+        Route::get('dashboard', [AdminWorkspaceController::class, 'dashboard']);
+        Route::get('/',         [AdminWorkspaceController::class, 'index']);
     });
 });

@@ -10,6 +10,18 @@ use App\Models\Workspace;
 class TaskPolicy
 {
     /**
+     * Intercepta verificações globais para Super Admins.
+     */
+    public function before(User $user, string $ability): ?bool
+    {
+        if ($user->is_super_admin) {
+            return true;
+        }
+
+        return null;
+    }
+
+    /**
      * Somente membros do workspace podem listar as tarefas.
      */
     public function viewAny(User $user, Workspace $workspace): bool

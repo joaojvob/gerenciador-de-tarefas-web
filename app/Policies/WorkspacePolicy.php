@@ -9,6 +9,18 @@ use App\Models\Workspace;
 class WorkspacePolicy
 {
     /**
+     * Intercepta verificações globais para Super Admins.
+     */
+    public function before(User $user, string $ability): ?bool
+    {
+        if ($user->is_super_admin) {
+            return true;
+        }
+
+        return null; // Prossegue para as validações da Policy
+    }
+
+    /**
      * Qualquer usuário autenticado pode listar seus próprios workspaces.
      */
     public function viewAny(User $user): bool
@@ -57,12 +69,25 @@ class WorkspacePolicy
 
     /**
      * Somente owner ou admin podem convidar novos membros.
+     * Há limitação de quantidade de membros baseada no Plano (free = max 5).
      */
     public function inviteMember(User $user, Workspace $workspace): bool
     {
         $role = $user->roleIn($workspace);
 
-        return $role?->isAtLeast(WorkspaceMemberRole::Admin) ?? false;
+        if (! $role?->isAtLeast(WorkspaceMemberRole::Admin)) {
+            return false;
+        }
+
+        // Restrição ABAC baseada na coluna `plan`
+        if ($workspace->plan === 'free') {
+            $memberCount = $workspace->members()->count();
+            if ($memberCount >= 5) {
+                abort(403, 'O limite de 5 membros do plano FREE foi atingido. Faça upgrade para continuar.');
+            }
+        }
+
+        return true;
     }
 
     /**

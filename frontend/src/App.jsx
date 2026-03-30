@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+import AdminDashboard from './pages/AdminDashboard';
 
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -17,6 +18,13 @@ const PublicRoute = ({ children }) => {
   
   if (loading) return null;
   return !user ? children : <Navigate to="/" replace />;
+};
+
+const AdminRoute = ({ children }) => {
+  const { user, loading } = useAuth();
+  
+  if (loading) return null;
+  return user?.is_super_admin ? children : <Navigate to="/" replace />;
 };
 
 function AppRoutes() {
@@ -36,6 +44,11 @@ function AppRoutes() {
         <PrivateRoute>
           <Dashboard />
         </PrivateRoute>
+      } />
+      <Route path="/admin" element={
+        <AdminRoute>
+          <AdminDashboard />
+        </AdminRoute>
       } />
     </Routes>
   );
