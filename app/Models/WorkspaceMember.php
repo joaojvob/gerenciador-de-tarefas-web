@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use App\Enums\WorkspaceMemberRole;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\Pivot;
+use App\Enums\WorkspaceMemberRole;
 
 class WorkspaceMember extends Pivot
 {
@@ -27,10 +27,6 @@ class WorkspaceMember extends Pivot
             'joined_at' => 'datetime',
         ];
     }
-
-    // -------------------------------------------------------------------------
-    // Relationships
-    // -------------------------------------------------------------------------
 
     /**
      * Usuário membro.
@@ -55,10 +51,6 @@ class WorkspaceMember extends Pivot
     {
         return $this->belongsTo(User::class, 'invited_by');
     }
-
-    // -------------------------------------------------------------------------
-    // Helpers
-    // -------------------------------------------------------------------------
 
     /**
      * Verifica se o membro aceitou o convite (joined_at preenchido).

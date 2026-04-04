@@ -8,7 +8,7 @@ class TarefaRequest extends FormRequest
 {
     public function authorize()
     {
-        return true;  
+        return true;
     }
 
     public function rules()
@@ -25,7 +25,7 @@ class TarefaRequest extends FormRequest
     public function messages()
     {
         return [
-            'titulo.required' => 'O título é obrigatório.',
+            'titulo.required'             => 'O título é obrigatório.',
             'data_vencimento.date_format' => 'A data deve estar no formato correto.',
         ];
     }

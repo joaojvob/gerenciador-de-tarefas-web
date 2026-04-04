@@ -6,6 +6,7 @@ use App\Enums\WorkspaceMemberRole;
 use App\Http\Requests\Workspace\StoreWorkspaceRequest;
 use App\Models\User;
 use App\Models\Workspace;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
@@ -16,29 +17,44 @@ class CreateWorkspaceAction
      */
     public function execute(StoreWorkspaceRequest $request, User $owner): Workspace
     {
-        $slug = $this->generateUniqueSlug($request->name);
+        try {
+            DB::beginTransaction();
 
-        $workspace = Workspace::create([
-            'name'        => $request->name,
-            'slug'        => $slug,
-            'description' => $request->description,
-            'owner_id'    => $owner->id,
-            'personal'    => false,
-        ]);
+            $slug = $this->generateUniqueSlug($request->name);
 
-        $workspace->workspaceMembers()->create([
-            'user_id'   => $owner->id,
-            'role'      => WorkspaceMemberRole::Owner->value,
-            'joined_at' => now(),
-        ]);
+            $workspace = Workspace::create([
+                'name'        => $request->name,
+                'slug'        => $slug,
+                'description' => $request->description,
+                'owner_id'    => $owner->id,
+                'personal'    => false,
+            ]);
 
-        Log::info('Workspace criado.', [
-            'workspace_id' => $workspace->id,
-            'slug'         => $workspace->slug,
-            'owner_id'     => $owner->id,
-        ]);
+            $workspace->workspaceMembers()->create([
+                'user_id'   => $owner->id,
+                'role'      => WorkspaceMemberRole::Owner->value,
+                'joined_at' => now(),
+            ]);
 
-        return $workspace;
+            DB::commit();
+
+            Log::info('Workspace criado.', [
+                'workspace_id' => $workspace->id,
+                'slug'         => $workspace->slug,
+                'owner_id'     => $owner->id,
+            ]);
+
+            return $workspace;
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            Log::error('Erro ao criar workspace!', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            throw new \RuntimeException('Não foi possível criar o workspace. Tente novamente mais tarde.');
+        }
     }
 
     /**

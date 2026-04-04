@@ -2,14 +2,15 @@
 
 namespace App\Jobs;
 
-use App\Models\Task;
 use App\Notifications\TaskDueSoonNotification;
-use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Bus\Queueable;
+use App\Enums\TaskStatus;
+use App\Models\Task;
 
 class ProcessTaskDueSoonJob implements ShouldQueue
 {
@@ -24,7 +25,7 @@ class ProcessTaskDueSoonJob implements ShouldQueue
 
         $tasks = Task::with('assignee')
             ->whereNotNull('assigned_to')
-            ->where('status', '!=', \App\Enums\TaskStatus::Completed->value)
+            ->where('status', '!=', TaskStatus::Completed->value)
             ->whereNotNull('due_date')
             ->whereBetween('due_date', [$now, $limit])
             ->get();

@@ -23,9 +23,7 @@ class UpdateTaskAction
         ]);
 
         if (isset($data['status'])) {
-            $data['completed_at'] = ($data['status'] === TaskStatus::Completed->value)
-                ? now()
-                : null;
+            $data['completed_at'] = ($data['status'] === TaskStatus::Completed->value) ? now() : null;
         }
 
         $task->update($data);

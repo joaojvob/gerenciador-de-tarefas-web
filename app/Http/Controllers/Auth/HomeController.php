@@ -6,10 +6,10 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
-class IndexController extends Controller
+class HomeController extends Controller
 {
     public function index()
     {
-        return view('index.index');
+        return view('home.index');
     }
 }

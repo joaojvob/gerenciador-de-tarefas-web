@@ -2,18 +2,19 @@
 
 namespace App\Http\Controllers\Api\Task;
 
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use App\Http\Requests\Task\UpdateTaskRequest;
+use App\Http\Requests\Task\StoreTaskRequest;
+use App\Actions\Task\CreateTaskAction;
 use App\Actions\Task\DeleteTaskAction;
 use App\Actions\Task\UpdateTaskAction;
-use App\Enums\WorkspaceMemberRole;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Task\StoreTaskRequest;
-use App\Http\Requests\Task\UpdateTaskRequest;
 use App\Http\Resources\TaskResource;
-use App\Models\Task;
-use App\Models\Workspace;
+use App\Enums\WorkspaceMemberRole;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use App\Models\Workspace;
+use App\Models\Task;
 
 class TaskController extends Controller
 {
@@ -21,14 +22,14 @@ class TaskController extends Controller
     {
         $this->authorize('viewAny', [Task::class, $workspace]);
 
-        $user = $request->user();
+        $user  = $request->user();
         $query = $workspace->tasks()->with(['creator', 'assignee']);
 
-        if (! $user->is_super_admin) {
-            $role = $user->roleIn($workspace);
+        if (!$user->is_super_admin) {
+            $role      = $user->roleIn($workspace);
             $isManager = $role?->isAtLeast(WorkspaceMemberRole::Admin);
 
-            if (! $isManager) {
+            if (!$isManager) {
                 $query->where('assigned_to', $user->id);
             }
         }

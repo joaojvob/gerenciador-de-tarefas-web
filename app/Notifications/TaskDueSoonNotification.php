@@ -2,11 +2,11 @@
 
 namespace App\Notifications;
 
-use App\Models\Task;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
+use Illuminate\Bus\Queueable;
+use App\Models\Task;
 
 class TaskDueSoonNotification extends Notification implements ShouldQueue
 {
@@ -27,10 +27,10 @@ class TaskDueSoonNotification extends Notification implements ShouldQueue
         $dueDate     = $this->task->due_date?->format('d/m/Y H:i');
 
         return (new MailMessage)
-                    ->subject("Atenção: A tarefa '{$this->task->title}' vence em breve")
-                    ->greeting("Olá, {$notifiable->name}!")
-                    ->line("Você foi atribuído(a) à tarefa **{$this->task->title}**, que está marcada para vencer em **{$dueDate}**.")
-                    ->action('Visualizar Tarefa', $frontendUrl)
-                    ->line('Por favor, verifique o andamento para evitar atrasos no cronograma do seu workspace.');
+            ->subject("Atenção: A tarefa '{$this->task->title}' vence em breve")
+            ->greeting("Olá, {$notifiable->name}!")
+            ->line("Você foi atribuído(a) à tarefa **{$this->task->title}**, que está marcada para vencer em **{$dueDate}**.")
+            ->action('Visualizar Tarefa', $frontendUrl)
+            ->line('Por favor, verifique o andamento para evitar atrasos no cronograma do seu workspace.');
     }
 }

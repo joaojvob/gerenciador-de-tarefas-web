@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers\Api\Workspace;
 
-use App\Actions\Workspace\InviteMemberAction;
-use App\Actions\Workspace\UpdateMemberRoleAction;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Workspace\InviteMemberRequest;
-use App\Http\Requests\Workspace\UpdateMemberRoleRequest;
-use App\Http\Resources\WorkspaceMemberResource;
-use App\Models\User;
-use App\Models\Workspace;
-use App\Models\WorkspaceMember;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use App\Http\Requests\Workspace\UpdateMemberRoleRequest;
+use App\Http\Requests\Workspace\InviteMemberRequest;
+use App\Actions\Workspace\UpdateMemberRoleAction;
+use App\Http\Resources\WorkspaceMemberResource;
+use App\Actions\Workspace\InviteMemberAction;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
+use App\Models\WorkspaceMember;
+use Illuminate\Http\Request;
+use App\Models\Workspace;
+use App\Models\User;
 
 class WorkspaceMemberController extends Controller
 {

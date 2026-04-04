@@ -2,11 +2,11 @@
 
 namespace App\Http\Requests\Task;
 
+use Illuminate\Foundation\Http\FormRequest;
+use App\Enums\WorkspaceMemberRole;
+use Illuminate\Validation\Rule;
 use App\Enums\TaskPriority;
 use App\Enums\TaskStatus;
-use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
-use App\Enums\WorkspaceMemberRole;
 
 class UpdateTaskRequest extends FormRequest
 {
@@ -35,12 +35,12 @@ class UpdateTaskRequest extends FormRequest
             return $rules;
         }
 
-        $role = $user->roleIn($task->workspace);
+        $role      = $user->roleIn($task->workspace);
         $isManager = $role?->isAtLeast(WorkspaceMemberRole::Admin);
         $isCreator = $task->created_by === $user->id;
 
-        // Se for um "Membro" simples e não foi o criador, ele só pode alterar o Status (Kanban)
-        if (! $isManager && ! $isCreator) {
+        // Se for um "Membro" simples e não foi o criador, ele só pode alterar o Status
+        if (!$isManager && !$isCreator) {
             return [
                 'status' => ['required', Rule::enum(TaskStatus::class)],
             ];

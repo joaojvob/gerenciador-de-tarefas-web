@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests\Workspace;
 
-use App\Enums\WorkspaceMemberRole;
 use Illuminate\Foundation\Http\FormRequest;
+use App\Enums\WorkspaceMemberRole;
 use Illuminate\Validation\Rule;
 
 class UpdateMemberRoleRequest extends FormRequest

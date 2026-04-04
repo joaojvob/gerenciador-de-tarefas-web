@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
+use Illuminate\Validation\ValidationException;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use App\Models\Tarefa;
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
 
 class ApiController extends Controller
 {
@@ -22,7 +22,7 @@ class ApiController extends Controller
             if (auth()->attempt($data)) {
                 $user  = auth()->user();
                 $token = $user->createToken('auth_token')->plainTextToken;
-                
+
                 return response()->json([
                     'token'   => $token,
                     'user'    => $user,
@@ -74,7 +74,7 @@ class ApiController extends Controller
             }
 
             if ($e->validator->errors()->has('email')) {
-                $errors['email'] = $request->email 
+                $errors['email'] = $request->email
                     ? 'O e-mail informado já está em uso ou não é válido.'
                     : 'O campo e-mail é obrigatório.';
             }
@@ -146,7 +146,7 @@ class ApiController extends Controller
     public function apiIndex(Request $request)
     {
         $tarefas = Tarefa::where('user_id', auth()->id())->orderBy('ordem')->get();
-        
+
         return response()->json([
             'data'    => $tarefas,
             'message' => 'Tarefas carregadas com sucesso.'
@@ -249,7 +249,7 @@ class ApiController extends Controller
             if ($e->validator->errors()->has('prioridade')) {
                 $errors['prioridade'] = 'A prioridade deve ser Baixa, Média ou Alta.';
             }
-            
+
             if ($e->validator->errors()->has('status')) {
                 $errors['status'] = 'O status deve ser Pendente, Em Andamento, Concluída ou Cancelada.';
             }

@@ -3,15 +3,15 @@
 namespace App\Actions\Workspace;
 
 use App\Http\Requests\Workspace\InviteMemberRequest;
-use App\Models\User;
-use App\Models\Workspace;
-use App\Models\WorkspaceMember;
+use App\Jobs\SendWorkspaceInvitationJob;
 use Illuminate\Support\Facades\Log;
+use App\Enums\WorkspaceMemberRole;
+use App\Models\WorkspaceMember;
+use App\Models\Workspace;
+use App\Models\User;
 
 class InviteMemberAction
 {
-    use App\Jobs\SendWorkspaceInvitationJob;
-
     /**
      * Adiciona um usuário como membro do workspace e envia convite assíncrono.
      */
@@ -21,7 +21,7 @@ class InviteMemberAction
 
         $member = $workspace->workspaceMembers()->create([
             'user_id'    => $invitee->id,
-            'role'       => \App\Enums\WorkspaceMemberRole::Member->value,
+            'role'       => WorkspaceMemberRole::Member->value,
             'invited_by' => $inviter->id,
             'joined_at'  => now(),
         ]);

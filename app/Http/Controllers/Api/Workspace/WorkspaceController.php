@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers\Api\Workspace;
 
-use App\Actions\Workspace\CreateWorkspaceAction;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Workspace\StoreWorkspaceRequest;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use App\Http\Requests\Workspace\UpdateWorkspaceRequest;
+use App\Http\Requests\Workspace\StoreWorkspaceRequest;
+use App\Actions\Workspace\CreateWorkspaceAction;
 use App\Http\Resources\WorkspaceResource;
-use App\Models\Workspace;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use App\Models\Workspace;
 
 class WorkspaceController extends Controller
 {

@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
-use App\Enums\WorkspaceMemberRole;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
+use App\Enums\WorkspaceMemberRole;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -35,9 +35,6 @@ class User extends Authenticatable
         ];
     }
 
-    // -------------------------------------------------------------------------
-    // Relationships
-    // -------------------------------------------------------------------------
 
     /**
      * Workspaces dos quais o usuário é proprietário.
@@ -53,9 +50,9 @@ class User extends Authenticatable
     public function workspaces(): BelongsToMany
     {
         return $this->belongsToMany(Workspace::class, 'workspace_members')
-                    ->using(WorkspaceMember::class)
-                    ->withPivot('role', 'invited_by', 'joined_at')
-                    ->withTimestamps();
+            ->using(WorkspaceMember::class)
+            ->withPivot('role', 'invited_by', 'joined_at')
+            ->withTimestamps();
     }
 
     /**
@@ -74,18 +71,14 @@ class User extends Authenticatable
         return $this->hasMany(Task::class, 'assigned_to');
     }
 
-    // -------------------------------------------------------------------------
-    // Helpers
-    // -------------------------------------------------------------------------
-
     /**
      * Retorna o papel do usuário em um workspace específico.
      */
     public function roleIn(Workspace $workspace): ?WorkspaceMemberRole
     {
         $member = $this->workspaces()
-                       ->where('workspace_id', $workspace->id)
-                       ->first();
+            ->where('workspace_id', $workspace->id)
+            ->first();
 
         if (! $member) {
             return null;

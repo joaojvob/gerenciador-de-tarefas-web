@@ -84,6 +84,17 @@ O schema é construído para suportar multi-tenancy real:
 
 ### Passos
 
+## 🛠️ Requisitos de Ambiente
+
+Para rodar este projeto localmente, além do **PHP 8.3**, **Composer** e **Node.js**, você precisará garantir que as seguintes extensões do PHP estejam instaladas e habilitadas no seu sistema.
+
+### Extensões do PHP
+No Ubuntu/Debian, você pode instalar todas as extensões necessárias de uma vez com o seguinte comando:
+
+```bash
+sudo apt update
+sudo apt install php8.3-curl php8.3-xml php8.3-gd php8.3-zip php8.3-mbstring php8.3-sqlite3
+
 ```bash
 # 1. Clone o repositório
 git clone https://github.com/joaojvob/gerenciador-de-tarefas-web.git
@@ -104,6 +115,11 @@ php artisan db:seed
 
 # 6. Inicie o servidor
 php artisan serve
+
+# 7. Compilar js
+npm install
+
+npm run dev
 ```
 
 ---

@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Task;
-use App\Models\User;
-use App\Models\Workspace;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Models\Workspace;
+use App\Models\Task;
+use App\Models\User;
 
 class AdminWorkspaceController extends Controller
 {
@@ -17,7 +17,7 @@ class AdminWorkspaceController extends Controller
     public function dashboard(Request $request): JsonResponse
     {
         // Proteção double-check caso o middleware falhe
-        if (! $request->user()->is_super_admin) {
+        if (!$request->user()->is_super_admin) {
             abort(403, 'Acesso restrito a Super Administradores da plataforma.');
         }
 
@@ -43,9 +43,7 @@ class AdminWorkspaceController extends Controller
             abort(403);
         }
 
-        $workspaces = Workspace::with(['owner'])
-            ->withCount(['members', 'tasks'])
-            ->paginate(50);
+        $workspaces = Workspace::with(['owner'])->withCount(['members', 'tasks'])->paginate(50);
 
         return response()->json(['data' => $workspaces]);
     }

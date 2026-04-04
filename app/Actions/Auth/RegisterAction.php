@@ -3,9 +3,12 @@
 namespace App\Actions\Auth;
 
 use App\Http\Requests\Auth\RegisterRequest;
-use App\Models\User;
-use App\Models\Workspace;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
+use App\Enums\WorkspaceMemberRole;
+use App\Models\Workspace;
+use App\Models\User;
+use Exception;
 
 class RegisterAction
 {
@@ -16,32 +19,46 @@ class RegisterAction
      */
     public function execute(RegisterRequest $request): array
     {
-        $user = User::create([
-            'name'     => $request->name,
-            'email'    => $request->email,
-            'password' => $request->password,
-        ]);
+        try {
+            DB::beginTransaction();
 
-        $workspace = Workspace::create([
-            'name'     => "Workspace de {$user->name}",
-            'owner_id' => $user->id,
-            'personal' => true,
-        ]);
+            $user = User::create([
+                'name'     => $request->name,
+                'email'    => $request->email,
+                'password' => $request->password,
+            ]);
 
-        $workspace->workspaceMembers()->create([
-            'user_id'   => $user->id,
-            'role'      => \App\Enums\WorkspaceMemberRole::Owner->value,
-            'joined_at' => now(),
-        ]);
+            $workspace = Workspace::create([
+                'name'     => "Workspace de {$user->name}",
+                'owner_id' => $user->id,
+                'personal' => true,
+            ]);
 
-        $token = $user->createToken('api-token')->plainTextToken;
+            $workspace->workspaceMembers()->create([
+                'user_id'   => $user->id,
+                'role'      => WorkspaceMemberRole::Owner->value,
+                'joined_at' => now(),
+            ]);
 
-        Log::info('Novo usuário registrado.', [
-            'user_id'      => $user->id,
-            'email'        => $user->email,
-            'workspace_id' => $workspace->id,
-        ]);
+            $token = $user->createToken('api-token')->plainTextToken;
 
-        return compact('user', 'token');
+            DB::commit();
+
+            Log::info('Novo usuário registrado.', [
+                'user_id'      => $user->id,
+                'email'        => $user->email,
+                'workspace_id' => $workspace->id,
+            ]);
+
+            return compact('user', 'token');
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error('Falha na validação do registro!', [
+                'trace'  => $e->getTraceAsString(),
+                'error'  => $e->getMessage(),
+            ]);
+
+            throw $e;
+        }
     }
 }

@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
-use App\Enums\TaskPriority;
-use App\Enums\TaskStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Model;
+use App\Enums\TaskPriority;
+use App\Enums\TaskStatus;
 
 class Task extends Model
 {
@@ -39,10 +39,6 @@ class Task extends Model
         ];
     }
 
-    // -------------------------------------------------------------------------
-    // Relationships
-    // -------------------------------------------------------------------------
-
     /**
      * Workspace ao qual a tarefa pertence.
      */
@@ -66,10 +62,6 @@ class Task extends Model
     {
         return $this->belongsTo(User::class, 'assigned_to');
     }
-
-    // -------------------------------------------------------------------------
-    // Scopes
-    // -------------------------------------------------------------------------
 
     /**
      * Filtra tarefas pelo status informado.
@@ -102,10 +94,6 @@ class Task extends Model
     {
         return $query->orderBy('order');
     }
-
-    // -------------------------------------------------------------------------
-    // Helpers
-    // -------------------------------------------------------------------------
 
     /**
      * Verifica se a tarefa está concluída.

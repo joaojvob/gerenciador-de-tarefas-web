@@ -2,13 +2,13 @@
 
 namespace App\Actions\Workspace;
 
-use App\Enums\WorkspaceMemberRole;
 use App\Http\Requests\Workspace\UpdateMemberRoleRequest;
-use App\Models\User;
-use App\Models\Workspace;
-use App\Models\WorkspaceMember;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\Log;
+use App\Enums\WorkspaceMemberRole;
+use App\Models\WorkspaceMember;
+use App\Models\Workspace;
+use App\Models\User;
 
 class UpdateMemberRoleAction
 {
@@ -22,9 +22,7 @@ class UpdateMemberRoleAction
         Workspace $workspace,
         User $target
     ): WorkspaceMember {
-        $member = WorkspaceMember::where('workspace_id', $workspace->id)
-                                  ->where('user_id', $target->id)
-                                  ->firstOrFail();
+        $member = WorkspaceMember::where('workspace_id', $workspace->id)->where('user_id', $target->id)->firstOrFail();
 
         if ($member->role === WorkspaceMemberRole::Owner) {
             throw new HttpResponseException(

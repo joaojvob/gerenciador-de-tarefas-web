@@ -2,10 +2,10 @@
 
 namespace App\Mail;
 
-use App\Models\Tarefa;
+use Illuminate\Queue\SerializesModels;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
-use Illuminate\Queue\SerializesModels;
+use App\Models\Tarefa;
 
 class TarefaVencimento extends Mailable
 {

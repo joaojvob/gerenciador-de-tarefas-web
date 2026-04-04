@@ -1,5 +1,7 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import api from '../lib/axios';
+import { createContext, useEffect, useMemo, useState } from 'react';
+import { AUTH_MODE } from '../services/http/axios';
+import * as authService from '../services/auth.service';
+import { clearAuthToken, getAuthToken, setAuthToken } from '../utils/storage';
 
 const AuthContext = createContext();
 
@@ -7,43 +9,89 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Inicializa o state com o Me do Backend
   useEffect(() => {
-    const fetchUser = async () => {
+    async function bootstrapAuth() {
+      const hasToken = Boolean(getAuthToken());
+
+      if (AUTH_MODE === 'token' && !hasToken) {
+        setLoading(false);
+        return;
+      }
+
       try {
-        const { data } = await api.get('/api/auth/me');
-        setUser(data.user);
-      } catch (error) {
+        const payload = await authService.me();
+        setUser(payload.user ?? payload.data ?? null);
+      } catch {
         setUser(null);
+        if (AUTH_MODE === 'token') {
+          clearAuthToken();
+        }
       } finally {
         setLoading(false);
       }
-    };
+    }
 
-    fetchUser();
+    bootstrapAuth();
   }, []);
 
   const login = async (credentials) => {
-    await api.get('/sanctum/csrf-cookie');
-    const { data } = await api.post('/api/auth/login', credentials);
-    setUser(data.user);
+    const payload = await authService.login(credentials);
+
+    if (AUTH_MODE === 'token' && payload.token) {
+      setAuthToken(payload.token);
+    }
+
+    if (payload.user) {
+      setUser(payload.user);
+      return payload.user;
+    }
+
+    const mePayload = await authService.me();
+    const authenticatedUser = mePayload.user ?? mePayload.data ?? null;
+    setUser(authenticatedUser);
+    return authenticatedUser;
   };
 
-  const register = async (data) => {
-    const response = await api.post('/api/auth/register', data);
-    setUser(response.data.user);
+  const register = async (payload) => {
+    const response = await authService.register(payload);
+
+    if (AUTH_MODE === 'token' && response.token) {
+      setAuthToken(response.token);
+    }
+
+    if (response.user) {
+      setUser(response.user);
+      return response.user;
+    }
+
+    return null;
   };
 
   const logout = async () => {
-    await api.post('/api/auth/logout');
-    setUser(null);
+    try {
+      await authService.logout();
+    } finally {
+      if (AUTH_MODE === 'token') {
+        clearAuthToken();
+      }
+      setUser(null);
+    }
   };
 
+  const value = useMemo(() => ({
+    user,
+    loading,
+    isAuthenticated: Boolean(user),
+    login,
+    register,
+    logout,
+  }), [user, loading]);
+
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, loading }}>
-        {!loading && children}
+    <AuthContext.Provider value={value}>
+      {children}
     </AuthContext.Provider>
   );
 };
 
-export const useAuth = () => useContext(AuthContext);
+export { AuthContext };

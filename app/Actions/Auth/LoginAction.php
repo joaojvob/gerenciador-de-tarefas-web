@@ -2,11 +2,11 @@
 
 namespace App\Actions\Auth;
 
-use App\Http\Requests\Auth\LoginRequest;
-use App\Models\User;
 use Illuminate\Auth\AuthenticationException;
+use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use App\Models\User;
 
 class LoginAction
 {
@@ -21,7 +21,7 @@ class LoginAction
     {
         $user = User::where('email', $request->email)->first();
 
-        if (! $user || ! Hash::check($request->password, $user->password)) {
+        if (!$user || !Hash::check($request->password, $user->password)) {
             Log::warning('Tentativa de login inválida.', ['email' => $request->email]);
 
             throw new AuthenticationException('Credenciais inválidas.');

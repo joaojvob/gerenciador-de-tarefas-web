@@ -3,9 +3,9 @@
 namespace App\Policies;
 
 use App\Enums\WorkspaceMemberRole;
+use App\Models\Workspace;
 use App\Models\Task;
 use App\Models\User;
-use App\Models\Workspace;
 
 class TaskPolicy
 {

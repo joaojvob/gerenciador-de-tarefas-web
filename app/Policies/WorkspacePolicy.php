@@ -3,8 +3,8 @@
 namespace App\Policies;
 
 use App\Enums\WorkspaceMemberRole;
-use App\Models\User;
 use App\Models\Workspace;
+use App\Models\User;
 
 class WorkspacePolicy
 {
@@ -82,6 +82,7 @@ class WorkspacePolicy
         // Restrição ABAC baseada na coluna `plan`
         if ($workspace->plan === 'free') {
             $memberCount = $workspace->members()->count();
+
             if ($memberCount >= 5) {
                 abort(403, 'O limite de 5 membros do plano FREE foi atingido. Faça upgrade para continuar.');
             }

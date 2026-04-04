@@ -8,11 +8,9 @@ use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvi
 class RouteServiceProvider extends ServiceProvider
 {
     /**
-     * O namespace do seu controlador (opcional).
      *
      * @var string|null
      */
-    // protected $namespace = 'App\\Http\\Controllers';
 
     /**
      * Define as rotas da aplicação.
@@ -22,12 +20,9 @@ class RouteServiceProvider extends ServiceProvider
         parent::boot();
 
         $this->routes(function () {
-            Route::middleware('web')
-                ->group(base_path('routes/web.php'));
+            Route::middleware('web')->group(base_path('routes/web.php'));
 
-            Route::prefix('api')
-                ->middleware('api')
-                ->group(base_path('routes/api.php'));
+            Route::prefix('api')->middleware('api')->group(base_path('routes/api.php'));
         });
     }
 }

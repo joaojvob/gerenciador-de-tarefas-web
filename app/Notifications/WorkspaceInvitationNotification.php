@@ -2,12 +2,12 @@
 
 namespace App\Notifications;
 
-use App\Models\User;
-use App\Models\Workspace;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
+use Illuminate\Bus\Queueable;
+use App\Models\Workspace;
+use App\Models\User;
 
 class WorkspaceInvitationNotification extends Notification implements ShouldQueue
 {
@@ -28,10 +28,10 @@ class WorkspaceInvitationNotification extends Notification implements ShouldQueu
         $frontendUrl = config('app.frontend_url') . "/workspaces/{$this->workspace->slug}";
 
         return (new MailMessage)
-                    ->subject("Convite para o Workspace: {$this->workspace->name}")
-                    ->greeting("Olá, {$notifiable->name}!")
-                    ->line("Você foi convidado(a) por {$this->inviter->name} para participar do workspace **{$this->workspace->name}**.")
-                    ->action('Acessar Workspace', $frontendUrl)
-                    ->line('Se você não esperava por este convite, pode ignorar este e-mail.');
+            ->subject("Convite para o Workspace: {$this->workspace->name}")
+            ->greeting("Olá, {$notifiable->name}!")
+            ->line("Você foi convidado(a) por {$this->inviter->name} para participar do workspace **{$this->workspace->name}**.")
+            ->action('Acessar Workspace', $frontendUrl)
+            ->line('Se você não esperava por este convite, pode ignorar este e-mail.');
     }
 }

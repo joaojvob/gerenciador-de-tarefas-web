@@ -10,6 +10,7 @@ enum TaskStatus: string
     case Paused     = 'paused';
     case Completed  = 'completed';
     case Incomplete = 'incomplete';
+    case Pending    = 'pending';
 
     /**
      * Retorna o rótulo legível do status em português.
@@ -23,6 +24,7 @@ enum TaskStatus: string
             self::Paused     => 'Pausada',
             self::Completed  => 'Concluída',
             self::Incomplete => 'Não Concluída',
+            self::Pending    => 'Pendente',
         };
     }
 
@@ -38,6 +40,7 @@ enum TaskStatus: string
             self::Paused     => '#FBBF24', // Yellow
             self::Completed  => '#10B981', // Emerald
             self::Incomplete => '#EF4444', // Red (Destructive)
+            self::Pending    => '#3B82F6', // Indigo (Primary)
         };
     }
 }

@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
 class Workspace extends Model
@@ -32,10 +32,6 @@ class Workspace extends Model
         ];
     }
 
-    // -------------------------------------------------------------------------
-    // Relationships
-    // -------------------------------------------------------------------------
-
     /**
      * Usuário proprietário do workspace.
      */
@@ -50,9 +46,9 @@ class Workspace extends Model
     public function members(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'workspace_members')
-                    ->using(WorkspaceMember::class)
-                    ->withPivot('role', 'invited_by', 'joined_at')
-                    ->withTimestamps();
+            ->using(WorkspaceMember::class)
+            ->withPivot('role', 'invited_by', 'joined_at')
+            ->withTimestamps();
     }
 
     /**
@@ -71,10 +67,6 @@ class Workspace extends Model
         return $this->hasMany(Task::class);
     }
 
-    // -------------------------------------------------------------------------
-    // Helpers
-    // -------------------------------------------------------------------------
-
     /**
      * Verifica se um usuário é membro deste workspace.
      */
@@ -82,10 +74,6 @@ class Workspace extends Model
     {
         return $this->members()->where('user_id', $user->id)->exists();
     }
-
-    // -------------------------------------------------------------------------
-    // Hooks
-    // -------------------------------------------------------------------------
 
     protected static function booted(): void
     {

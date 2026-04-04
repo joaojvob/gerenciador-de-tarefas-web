@@ -37,7 +37,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/',          [WorkspaceMemberController::class, 'index']);
         Route::post('/',         [WorkspaceMemberController::class, 'store']);
         Route::patch('{member}', [WorkspaceMemberController::class, 'update']);
-        Route::delete('{member}',[WorkspaceMemberController::class, 'destroy']);
+        Route::delete('{member}', [WorkspaceMemberController::class, 'destroy']);
     });
 
     // Tarefas do workspace (aninhado)
@@ -46,7 +46,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/',       [TaskController::class, 'store']);
         Route::get('{task}',   [TaskController::class, 'show']);
         Route::patch('{task}', [TaskController::class, 'update']);
-        Route::delete('{task}',[TaskController::class, 'destroy']);
+        Route::delete('{task}', [TaskController::class, 'destroy']);
     });
 
     // SaaS Global Area (Super Admin)
