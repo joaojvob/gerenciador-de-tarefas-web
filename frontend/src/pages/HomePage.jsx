@@ -1,78 +1,66 @@
 import AuthenticatedLayout from "../components/app/AuthenticatedLayout";
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-} from "../components/ui/Card";
 import { useAuth } from "../hooks/useAuth";
+import { useNotifications } from "../hooks/useNotifications";
+import WelcomeBanner from "../components/dashboard/WelcomeBanner";
+import MetricsGrid from "../components/dashboard/MetricsGrid";
+import ChartPanel from "../components/dashboard/ChartPanel";
+import ReportsPanel from "../components/dashboard/ReportsPanel";
+import { useDashboardData } from "../features/dashboard/useDashboardData";
 
 function HomePage() {
     const { user } = useAuth();
-
-    const cards = [
-        {
-            label: "Tarefas hoje",
-            value: "0",
-            help: "Sem tarefas planejadas para hoje.",
-        },
-        {
-            label: "Em andamento",
-            value: "0",
-            help: "Fluxo inicial ainda não carregado.",
-        },
-        {
-            label: "Workspaces",
-            value: "1",
-            help: "Seu ambiente principal está ativo.",
-        },
-    ];
+    const notifications = useNotifications();
+    const {
+        isLoading,
+        errorMessage,
+        cards,
+        chartData,
+        selectedChartSubject,
+        setSelectedChartSubject,
+        selectedChartType,
+        setSelectedChartType,
+        reportScope,
+        setReportScope,
+        workspaces,
+        exportCsv,
+        exportPdf,
+    } = useDashboardData(notifications);
 
     return (
         <AuthenticatedLayout
             title="Visão geral"
             subtitle={`Você está logado como ${user?.name ?? user?.email ?? "usuário"}.`}
         >
-            <div className="space-y-6">
-                <Card className="border-slate-800 bg-slate-900">
-                    <CardContent className="p-6">
-                        <div>
-                            <h2 className="text-2xl font-bold">
-                                Bem-vindo de volta
-                            </h2>
-                            <p className="mt-2 text-slate-300">
-                                Este painel centraliza seus próximos passos com
-                                workspaces e tarefas.
-                            </p>
-                            <p className="mt-1 text-sm text-slate-400">
-                                Próximo passo: integrar métricas reais da API.
-                            </p>
-                        </div>
-                    </CardContent>
-                </Card>
+            <div className="mx-auto max-w-7xl space-y-6 pb-12 font-sans">
+                <WelcomeBanner />
 
-                <section className="grid gap-4 md:grid-cols-3">
-                    {cards.map((card) => (
-                        <Card
-                            key={card.label}
-                            className="border-slate-800 bg-slate-900"
-                        >
-                            <CardHeader className="pb-2">
-                                <CardTitle className="text-sm font-medium text-slate-300">
-                                    {card.label}
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <p className="text-3xl font-bold text-slate-100">
-                                    {card.value}
-                                </p>
-                                <p className="mt-2 text-xs text-slate-400">
-                                    {card.help}
-                                </p>
-                            </CardContent>
-                        </Card>
-                    ))}
-                </section>
+                {errorMessage ? (
+                    <div className="flex items-center gap-3 rounded-xl border border-red-500/20 bg-red-500/10 p-4">
+                        <p className="text-sm font-medium text-red-400">
+                            {errorMessage}
+                        </p>
+                    </div>
+                ) : null}
+
+                <MetricsGrid cards={cards} isLoading={isLoading} />
+
+                <div className="grid gap-6 md:grid-cols-2">
+                    <ChartPanel
+                        chartData={chartData}
+                        selectedChartSubject={selectedChartSubject}
+                        onChangeChartSubject={setSelectedChartSubject}
+                        selectedChartType={selectedChartType}
+                        onChangeChartType={setSelectedChartType}
+                    />
+
+                    <ReportsPanel
+                        reportScope={reportScope}
+                        onChangeReportScope={setReportScope}
+                        workspaces={workspaces}
+                        onExportCsv={exportCsv}
+                        onExportPdf={exportPdf}
+                    />
+                </div>
             </div>
         </AuthenticatedLayout>
     );

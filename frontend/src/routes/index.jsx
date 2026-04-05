@@ -6,7 +6,8 @@ import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
 import HomePage from "../pages/HomePage";
 import WorkspacesPage from "../pages/WorkspacesPage";
-import TasksPage from "../pages/TasksPage";
+import TasksPageClean from "../pages/TasksPageClean";
+import ProfilePage from "../pages/ProfilePage";
 
 function AppRoutes() {
     return (
@@ -20,8 +21,12 @@ function AppRoutes() {
 
             <Route element={<ProtectedRoute />}>
                 <Route path="/home" element={<HomePage />} />
+                <Route path="/tasks" element={<TasksPageClean />} />
+            </Route>
+
+            <Route element={<ProtectedRoute requiresManager />}>
                 <Route path="/workspaces" element={<WorkspacesPage />} />
-                <Route path="/tasks" element={<TasksPage />} />
+                <Route path="/profile" element={<ProfilePage />} />
             </Route>
 
             <Route path="*" element={<Navigate to="/" replace />} />

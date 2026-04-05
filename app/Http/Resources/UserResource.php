@@ -14,6 +14,8 @@ class UserResource extends JsonResource
             'name'       => $this->name,
             'email'      => $this->email,
             'avatar_url' => $this->avatar_url,
+            'is_super_admin' => (bool) $this->is_super_admin,
+            'is_workspace_manager' => $this->isWorkspaceManager(),
             'created_at' => $this->created_at->toISOString(),
         ];
     }

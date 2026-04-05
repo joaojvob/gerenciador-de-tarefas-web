@@ -42,7 +42,7 @@ class TaskPolicy
      */
     public function create(User $user, Workspace $workspace): bool
     {
-        return $workspace->hasMember($user);
+        return $user->canCreateTasksIn($workspace);
     }
 
     /**

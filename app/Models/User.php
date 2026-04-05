@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
 use App\Enums\WorkspaceMemberRole;
+use App\Models\WorkspaceMember;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -51,7 +52,7 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Workspace::class, 'workspace_members')
             ->using(WorkspaceMember::class)
-            ->withPivot('role', 'invited_by', 'joined_at')
+            ->withPivot('role', 'permissions', 'invited_by', 'joined_at')
             ->withTimestamps();
     }
 
@@ -84,7 +85,13 @@ class User extends Authenticatable
             return null;
         }
 
-        return WorkspaceMemberRole::from($member->pivot->role);
+        $pivotRole = $member->pivot->role;
+
+        if ($pivotRole instanceof WorkspaceMemberRole) {
+            return $pivotRole;
+        }
+
+        return WorkspaceMemberRole::from($pivotRole);
     }
 
     /**
@@ -93,5 +100,48 @@ class User extends Authenticatable
     public function isMemberOf(Workspace $workspace): bool
     {
         return $this->workspaces()->where('workspace_id', $workspace->id)->exists();
+    }
+
+    /**
+     * Retorna o registro de membro em um workspace específico.
+     */
+    public function workspaceMemberIn(Workspace $workspace): ?WorkspaceMember
+    {
+        return WorkspaceMember::query()
+            ->where('workspace_id', $workspace->id)
+            ->where('user_id', $this->id)
+            ->first();
+    }
+
+    /**
+     * Verifica se o usuário pode criar tarefas no workspace.
+     */
+    public function canCreateTasksIn(Workspace $workspace): bool
+    {
+        $member = $this->workspaceMemberIn($workspace);
+
+        if (! $member) {
+            return false;
+        }
+
+        return $member->hasPermission('can_create_tasks');
+    }
+
+    /**
+     * Verifica se o usuário atua como gestor em algum workspace.
+     */
+    public function isWorkspaceManager(): bool
+    {
+        if ($this->is_super_admin) {
+            return true;
+        }
+
+        return WorkspaceMember::query()
+            ->where('user_id', $this->id)
+            ->whereIn('role', [
+                WorkspaceMemberRole::Owner->value,
+                WorkspaceMemberRole::Admin->value,
+            ])
+            ->exists();
     }
 }

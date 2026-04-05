@@ -2,15 +2,24 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { Button } from "../ui/Button";
 import { useAuth } from "../../hooks/useAuth";
 
-const navItems = [
+const managerNavItems = [
     { to: "/home", label: "Visão geral" },
     { to: "/workspaces", label: "Workspaces" },
+    { to: "/tasks", label: "Tarefas" },
+    { to: "/profile", label: "Perfil" },
+];
+
+const memberNavItems = [
+    { to: "/home", label: "Visão geral" },
     { to: "/tasks", label: "Tarefas" },
 ];
 
 function AuthenticatedLayout({ title, subtitle, children }) {
     const navigate = useNavigate();
     const { user, logout } = useAuth();
+    const navItems = user?.is_workspace_manager
+        ? managerNavItems
+        : memberNavItems;
 
     async function handleLogout() {
         await logout();

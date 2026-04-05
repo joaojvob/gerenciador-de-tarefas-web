@@ -16,6 +16,7 @@ class WorkspaceMember extends Pivot
         'workspace_id',
         'user_id',
         'role',
+        'permissions',
         'invited_by',
         'joined_at',
     ];
@@ -24,6 +25,7 @@ class WorkspaceMember extends Pivot
     {
         return [
             'role'      => WorkspaceMemberRole::class,
+            'permissions' => 'array',
             'joined_at' => 'datetime',
         ];
     }
@@ -66,5 +68,27 @@ class WorkspaceMember extends Pivot
     public function isAtLeast(WorkspaceMemberRole $role): bool
     {
         return $this->role->isAtLeast($role);
+    }
+
+    /**
+     * Verifica uma permissão granular do membro.
+     */
+    public function hasPermission(string $key): bool
+    {
+        if ($this->role->isAtLeast(WorkspaceMemberRole::Admin)) {
+            return true;
+        }
+
+        return (bool) data_get($this->permissions ?? [], $key, false);
+    }
+
+    /**
+     * Retorna permissões normalizadas para consumo da API.
+     */
+    public function normalizedPermissions(): array
+    {
+        return [
+            'can_create_tasks' => $this->hasPermission('can_create_tasks'),
+        ];
     }
 }

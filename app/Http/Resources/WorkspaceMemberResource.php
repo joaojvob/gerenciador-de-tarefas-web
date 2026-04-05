@@ -14,6 +14,7 @@ class WorkspaceMemberResource extends JsonResource
             'user'       => UserResource::make($this->whenLoaded('user')),
             'role'       => $this->role->value,
             'role_label' => $this->role->label(),
+            'permissions' => $this->normalizedPermissions(),
             'invited_by' => UserResource::make($this->whenLoaded('inviter')),
             'joined_at'  => $this->joined_at?->toISOString(),
             'created_at' => $this->created_at->toISOString(),

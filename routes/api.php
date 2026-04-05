@@ -26,6 +26,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('auth')->group(function () {
         Route::post('logout', [AuthController::class, 'logout']);
         Route::get('me',      [AuthController::class, 'me']);
+        Route::patch('profile', [AuthController::class, 'updateProfile']);
     });
 
     // Workspaces
@@ -36,6 +37,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('workspaces/{workspace:slug}/members')->group(function () {
         Route::get('/',          [WorkspaceMemberController::class, 'index']);
         Route::post('/',         [WorkspaceMemberController::class, 'store']);
+        Route::post('register',  [WorkspaceMemberController::class, 'register']);
         Route::patch('{member}', [WorkspaceMemberController::class, 'update']);
         Route::delete('{member}', [WorkspaceMemberController::class, 'destroy']);
     });

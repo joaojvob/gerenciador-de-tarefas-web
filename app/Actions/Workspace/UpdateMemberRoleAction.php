@@ -22,9 +22,14 @@ class UpdateMemberRoleAction
         Workspace $workspace,
         User $target
     ): WorkspaceMember {
+        $payload = $request->validated();
+
         $member = WorkspaceMember::where('workspace_id', $workspace->id)->where('user_id', $target->id)->firstOrFail();
 
-        if ($member->role === WorkspaceMemberRole::Owner) {
+        $updatingRole = array_key_exists('role', $payload);
+        $updatingPermissions = array_key_exists('permissions', $payload);
+
+        if (($updatingRole || $updatingPermissions) && $member->role === WorkspaceMemberRole::Owner) {
             throw new HttpResponseException(
                 response()->json(['message' => 'O papel do owner não pode ser alterado.'], 422)
             );
@@ -32,13 +37,42 @@ class UpdateMemberRoleAction
 
         $previousRole = $member->role->value;
 
-        $member->update(['role' => $request->role]);
+        if (array_key_exists('name', $payload) || array_key_exists('email', $payload)) {
+            $target->fill([
+                'name' => $payload['name'] ?? $target->name,
+                'email' => $payload['email'] ?? $target->email,
+            ]);
+            $target->save();
+        }
+
+        $memberData = [];
+
+        if ($updatingRole) {
+            $memberData['role'] = $payload['role'];
+        }
+
+        if ($updatingPermissions || $updatingRole) {
+            $currentPermissions = $member->permissions ?? [];
+            $incomingPermissions = $payload['permissions'] ?? [];
+            $mergedPermissions = array_merge($currentPermissions, $incomingPermissions);
+
+            if (($memberData['role'] ?? $member->role->value) === WorkspaceMemberRole::Admin->value) {
+                $mergedPermissions['can_create_tasks'] = true;
+            }
+
+            $memberData['permissions'] = $mergedPermissions;
+        }
+
+        if (! empty($memberData)) {
+            $member->update($memberData);
+        }
 
         Log::info('Papel de membro atualizado.', [
             'workspace_id'  => $workspace->id,
             'user_id'       => $target->id,
             'previous_role' => $previousRole,
-            'new_role'      => $request->role,
+            'new_role'      => $memberData['role'] ?? $previousRole,
+            'permissions'   => $memberData['permissions'] ?? null,
         ]);
 
         return $member->fresh();

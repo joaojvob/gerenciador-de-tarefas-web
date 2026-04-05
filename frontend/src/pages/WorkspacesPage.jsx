@@ -1,76 +1,120 @@
 import AuthenticatedLayout from "../components/app/AuthenticatedLayout";
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from "../components/ui/Card";
-import { Button } from "../components/ui/Button";
+import { Briefcase } from "lucide-react";
+import CreateWorkspaceCard from "../components/workspaces/CreateWorkspaceCard";
+import WorkspaceFeedback from "../components/workspaces/WorkspaceFeedback";
+import WorkspaceList from "../components/workspaces/WorkspaceList";
+import { useWorkspacesPageController } from "../features/workspaces/useWorkspacesPageController";
 
 function WorkspacesPage() {
-    const workspaces = [
-        {
-            name: "Workspace Principal",
-            role: "owner",
-            members: 1,
-            tasks: 0,
+    const {
+        workspaces,
+        isLoading,
+        isSubmitting,
+        errorMessage,
+        successMessage,
+        expandedWorkspaceSlug,
+        isSubmittingMember,
+        isLoadingMembers,
+        members,
+        memberMode,
+        form,
+        workspaceFieldErrors,
+        memberFieldErrors,
+        inviteForm,
+        registerMemberForm,
+        isEditMemberModalOpen,
+        editingMemberForm,
+        removingMemberUserId,
+        setMemberMode,
+        setForm,
+        setInviteForm,
+        setRegisterMemberForm,
+        setEditingMemberForm,
+        handleCreateWorkspace,
+        handleOpenBoard,
+        handleToggleMembers,
+        handleInviteMember,
+        handleRegisterMember,
+        handleOpenMemberEditModal,
+        handleCloseMemberEditModal,
+        handleSaveMemberEdit,
+        handleRemoveMember,
+    } = useWorkspacesPageController();
+
+    const memberPanelProps = {
+        memberMode,
+        onChangeMemberMode: (nextMode) => {
+            setMemberMode(nextMode);
         },
-    ];
+        memberFieldErrors,
+        inviteForm,
+        onChangeInviteForm: (field, value) => {
+            setInviteForm((current) => ({ ...current, [field]: value }));
+        },
+        onSubmitInvite: handleInviteMember,
+        registerMemberForm,
+        onChangeRegisterMemberForm: (field, value) => {
+            setRegisterMemberForm((current) => ({
+                ...current,
+                [field]: value,
+            }));
+        },
+        onSubmitRegisterMember: handleRegisterMember,
+        isSubmittingMember,
+        isLoadingMembers,
+        members,
+        isEditMemberModalOpen,
+        editingMemberForm,
+        removingMemberUserId,
+        onOpenEditMember: handleOpenMemberEditModal,
+        onCloseEditMember: handleCloseMemberEditModal,
+        onChangeEditMemberField: (field, value) => {
+            setEditingMemberForm((current) => ({
+                ...current,
+                [field]: value,
+            }));
+        },
+        onSaveMemberEdit: handleSaveMemberEdit,
+        onRemoveMember: handleRemoveMember,
+    };
 
     return (
         <AuthenticatedLayout
             title="Workspaces"
-            subtitle="Gerencie ambientes, membros e permissões do seu time."
+            subtitle="Crie, organize e faça a gestão dos ambientes da sua equipe."
         >
-            <section className="grid gap-4">
-                {workspaces.map((workspace) => (
-                    <Card
-                        key={workspace.name}
-                        className="border-slate-800 bg-slate-900"
-                    >
-                        <CardHeader>
-                            <CardTitle className="text-slate-100">
-                                {workspace.name}
-                            </CardTitle>
-                            <CardDescription className="text-slate-400">
-                                Papel atual: {workspace.role}
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                            <div className="text-sm text-slate-300">
-                                <p>Membros: {workspace.members}</p>
-                                <p>Tarefas ativas: {workspace.tasks}</p>
-                            </div>
+            <div className="space-y-8 pb-12">
+                <WorkspaceFeedback
+                    errorMessage={errorMessage}
+                    successMessage={successMessage}
+                />
 
-                            <div className="flex gap-2">
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    className="border-slate-700 bg-slate-900 text-slate-100 hover:bg-slate-800"
-                                >
-                                    Ver membros
-                                </Button>
-                                <Button type="button">Abrir board</Button>
-                            </div>
-                        </CardContent>
-                    </Card>
-                ))}
+                <CreateWorkspaceCard
+                    form={form}
+                    fieldErrors={workspaceFieldErrors}
+                    isSubmitting={isSubmitting}
+                    onChangeForm={(field, value) => {
+                        setForm((current) => ({ ...current, [field]: value }));
+                    }}
+                    onSubmit={handleCreateWorkspace}
+                />
 
-                <Card className="border-dashed border-slate-700 bg-slate-900/40">
-                    <CardContent className="flex flex-col gap-3 p-6 sm:flex-row sm:items-center sm:justify-between">
-                        <div>
-                            <p className="font-medium text-slate-200">
-                                Criar novo workspace
-                            </p>
-                            <p className="text-sm text-slate-400">
-                                Separe projetos por cliente, produto ou time.
-                            </p>
-                        </div>
-                        <Button type="button">Novo workspace</Button>
-                    </CardContent>
-                </Card>
-            </section>
+                <div className="space-y-4">
+                    <h2 className="mb-4 flex items-center gap-2 text-xl font-bold text-white">
+                        <Briefcase className="text-indigo-400" size={20} />
+                        Os seus Workspaces
+                    </h2>
+
+                    <WorkspaceList
+                        isLoading={isLoading}
+                        workspaces={workspaces}
+                        expandedWorkspaceSlug={expandedWorkspaceSlug}
+                        onToggleMembers={handleToggleMembers}
+                        onOpenBoard={handleOpenBoard}
+                        memberPanelProps={memberPanelProps}
+                    />
+                </div>
+            </div>
         </AuthenticatedLayout>
     );
 }

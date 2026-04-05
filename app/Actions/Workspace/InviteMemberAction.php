@@ -9,6 +9,7 @@ use App\Enums\WorkspaceMemberRole;
 use App\Models\WorkspaceMember;
 use App\Models\Workspace;
 use App\Models\User;
+use Illuminate\Validation\ValidationException;
 
 class InviteMemberAction
 {
@@ -19,9 +20,23 @@ class InviteMemberAction
     {
         $invitee = User::where('email', $request->email)->firstOrFail();
 
+        $alreadyMember = WorkspaceMember::query()
+            ->where('workspace_id', $workspace->id)
+            ->where('user_id', $invitee->id)
+            ->exists();
+
+        if ($alreadyMember) {
+            throw ValidationException::withMessages([
+                'email' => 'Este usuário já é membro do workspace.',
+            ]);
+        }
+
         $member = $workspace->workspaceMembers()->create([
             'user_id'    => $invitee->id,
             'role'       => WorkspaceMemberRole::Member->value,
+            'permissions' => [
+                'can_create_tasks' => false,
+            ],
             'invited_by' => $inviter->id,
             'joined_at'  => now(),
         ]);
