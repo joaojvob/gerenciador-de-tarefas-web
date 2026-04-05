@@ -1,5 +1,4 @@
-import { useNavigate } from "react-router-dom";
-import { Button } from "../components/ui/Button";
+import AuthenticatedLayout from "../components/app/AuthenticatedLayout";
 import {
     Card,
     CardContent,
@@ -9,8 +8,7 @@ import {
 import { useAuth } from "../hooks/useAuth";
 
 function HomePage() {
-    const navigate = useNavigate();
-    const { user, logout } = useAuth();
+    const { user } = useAuth();
 
     const cards = [
         {
@@ -30,41 +28,26 @@ function HomePage() {
         },
     ];
 
-    async function handleLogout() {
-        await logout();
-        navigate("/login", { replace: true });
-    }
-
     return (
-        <main className="min-h-screen bg-slate-950 px-4 py-14 text-slate-100 sm:py-20">
-            <div className="mx-auto w-full max-w-6xl space-y-6">
+        <AuthenticatedLayout
+            title="Visão geral"
+            subtitle={`Você está logado como ${user?.name ?? user?.email ?? "usuário"}.`}
+        >
+            <div className="space-y-6">
                 <Card className="border-slate-800 bg-slate-900">
-                    <CardContent className="flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
+                    <CardContent className="p-6">
                         <div>
-                            <h1 className="text-2xl font-bold">
+                            <h2 className="text-2xl font-bold">
                                 Bem-vindo de volta
-                            </h1>
+                            </h2>
                             <p className="mt-2 text-slate-300">
-                                Você está logado como{" "}
-                                <strong>
-                                    {user?.name ?? user?.email ?? "usuário"}
-                                </strong>
-                                .
+                                Este painel centraliza seus próximos passos com
+                                workspaces e tarefas.
                             </p>
                             <p className="mt-1 text-sm text-slate-400">
-                                Próximo passo: conectar dados reais do workspace
-                                e tarefas.
+                                Próximo passo: integrar métricas reais da API.
                             </p>
                         </div>
-
-                        <Button
-                            type="button"
-                            variant="outline"
-                            onClick={handleLogout}
-                            className="border-slate-600"
-                        >
-                            Sair
-                        </Button>
                     </CardContent>
                 </Card>
 
@@ -91,7 +74,7 @@ function HomePage() {
                     ))}
                 </section>
             </div>
-        </main>
+        </AuthenticatedLayout>
     );
 }
 
