@@ -7,6 +7,27 @@
 
 API RESTful construída com Laravel 11 para um sistema de gerenciamento de tarefas com arquitetura SaaS multi-tenant. Desenvolvida como projeto de portfólio com foco em boas práticas de engenharia de software.
 
+## Setup rápido (dependências)
+
+Para evitar problemas de dependências em uma máquina nova, use o setup automatizado abaixo:
+
+```bash
+cd gerenciador-de-tarefas-web
+npm run setup
+```
+
+Esse comando instala:
+
+- dependências PHP (`composer install`)
+- dependências Node da raiz (`npm install`)
+- dependências Node do `frontend/` (`npm --prefix frontend install`)
+
+Para desenvolvimento com backend + frontend juntos:
+
+```bash
+npm run dev:full
+```
+
 ---
 
 ## Sobre o Projeto
@@ -51,25 +72,25 @@ app/
 
 O schema é construído para suportar multi-tenancy real:
 
-| Tabela | Descrição |
-|---|---|
-| `users` | Usuários da plataforma |
-| `workspaces` | Espaços de trabalho (tenant) |
-| `workspace_members` | Membros por workspace com `role` (owner/admin/member) |
-| `tasks` | Tarefas vinculadas ao workspace, com atribuição, prioridade e status |
+| Tabela              | Descrição                                                            |
+| ------------------- | -------------------------------------------------------------------- |
+| `users`             | Usuários da plataforma                                               |
+| `workspaces`        | Espaços de trabalho (tenant)                                         |
+| `workspace_members` | Membros por workspace com `role` (owner/admin/member)                |
+| `tasks`             | Tarefas vinculadas ao workspace, com atribuição, prioridade e status |
 
 ---
 
 ## Tecnologias
 
-| Camada | Tecnologia |
-|---|---|
-| Backend | Laravel 11 (PHP 8.2+) |
-| Autenticação | Laravel Sanctum |
-| Banco de dados | MySQL 8+ |
-| Testes | Pest |
-| Filas | Laravel Queues (Redis recomendado) |
-| Frontend (em breve) | React SPA |
+| Camada              | Tecnologia                         |
+| ------------------- | ---------------------------------- |
+| Backend             | Laravel 11 (PHP 8.2+)              |
+| Autenticação        | Laravel Sanctum                    |
+| Banco de dados      | MySQL 8+                           |
+| Testes              | Pest                               |
+| Filas               | Laravel Queues (Redis recomendado) |
+| Frontend (em breve) | React SPA                          |
 
 ---
 
@@ -89,9 +110,10 @@ O schema é construído para suportar multi-tenancy real:
 Para rodar este projeto localmente, além do **PHP 8.3**, **Composer** e **Node.js**, você precisará garantir que as seguintes extensões do PHP estejam instaladas e habilitadas no seu sistema.
 
 ### Extensões do PHP
+
 No Ubuntu/Debian, você pode instalar todas as extensões necessárias de uma vez com o seguinte comando:
 
-```bash
+````bash
 sudo apt update
 sudo apt install php8.3-curl php8.3-xml php8.3-gd php8.3-zip php8.3-mbstring php8.3-sqlite3
 
@@ -120,7 +142,7 @@ php artisan serve
 npm install
 
 npm run dev
-```
+````
 
 ---
 
@@ -130,47 +152,47 @@ npm run dev
 
 ### Autenticação
 
-| Método | Rota | Descrição |
-|---|---|---|
+| Método | Rota            | Descrição                |
+| ------ | --------------- | ------------------------ |
 | `POST` | `/api/register` | Cadastro de novo usuário |
-| `POST` | `/api/login` | Login e geração de token |
-| `POST` | `/api/logout` | Revogação do token |
+| `POST` | `/api/login`    | Login e geração de token |
+| `POST` | `/api/logout`   | Revogação do token       |
 
 ### Workspaces
 
-| Método | Rota | Descrição |
-|---|---|---|
-| `GET` | `/api/workspaces` | Lista workspaces do usuário |
-| `POST` | `/api/workspaces` | Cria novo workspace |
-| `GET` | `/api/workspaces/{slug}` | Detalhes do workspace |
-| `PUT` | `/api/workspaces/{slug}` | Atualiza workspace |
-| `DELETE` | `/api/workspaces/{slug}` | Arquiva workspace |
+| Método   | Rota                     | Descrição                   |
+| -------- | ------------------------ | --------------------------- |
+| `GET`    | `/api/workspaces`        | Lista workspaces do usuário |
+| `POST`   | `/api/workspaces`        | Cria novo workspace         |
+| `GET`    | `/api/workspaces/{slug}` | Detalhes do workspace       |
+| `PUT`    | `/api/workspaces/{slug}` | Atualiza workspace          |
+| `DELETE` | `/api/workspaces/{slug}` | Arquiva workspace           |
 
 ### Membros
 
-| Método | Rota | Descrição |
-|---|---|---|
-| `GET` | `/api/workspaces/{slug}/members` | Lista membros |
-| `POST` | `/api/workspaces/{slug}/members` | Convida membro |
-| `PATCH` | `/api/workspaces/{slug}/members/{id}` | Altera role do membro |
-| `DELETE` | `/api/workspaces/{slug}/members/{id}` | Remove membro |
+| Método   | Rota                                  | Descrição             |
+| -------- | ------------------------------------- | --------------------- |
+| `GET`    | `/api/workspaces/{slug}/members`      | Lista membros         |
+| `POST`   | `/api/workspaces/{slug}/members`      | Convida membro        |
+| `PATCH`  | `/api/workspaces/{slug}/members/{id}` | Altera role do membro |
+| `DELETE` | `/api/workspaces/{slug}/members/{id}` | Remove membro         |
 
 ### Tarefas
 
-| Método | Rota | Descrição |
-|---|---|---|
-| `GET` | `/api/workspaces/{slug}/tasks` | Lista tarefas do workspace |
-| `POST` | `/api/workspaces/{slug}/tasks` | Cria tarefa |
-| `GET` | `/api/workspaces/{slug}/tasks/{id}` | Detalhes da tarefa |
-| `PUT` | `/api/workspaces/{slug}/tasks/{id}` | Atualiza tarefa (restrito dependendo da Role) |
-| `DELETE` | `/api/workspaces/{slug}/tasks/{id}` | Remove tarefa |
+| Método   | Rota                                | Descrição                                     |
+| -------- | ----------------------------------- | --------------------------------------------- |
+| `GET`    | `/api/workspaces/{slug}/tasks`      | Lista tarefas do workspace                    |
+| `POST`   | `/api/workspaces/{slug}/tasks`      | Cria tarefa                                   |
+| `GET`    | `/api/workspaces/{slug}/tasks/{id}` | Detalhes da tarefa                            |
+| `PUT`    | `/api/workspaces/{slug}/tasks/{id}` | Atualiza tarefa (restrito dependendo da Role) |
+| `DELETE` | `/api/workspaces/{slug}/tasks/{id}` | Remove tarefa                                 |
 
 ### SaaS Admin (Governança Global)
 
-| Método | Rota | Descrição |
-|---|---|---|
-| `GET` | `/api/admin/workspaces/dashboard` | Retorna métricas globais da plataforma (BI) |
-| `GET` | `/api/admin/workspaces` | Lista todos os workspaces ignorando Tenants |
+| Método | Rota                              | Descrição                                   |
+| ------ | --------------------------------- | ------------------------------------------- |
+| `GET`  | `/api/admin/workspaces/dashboard` | Retorna métricas globais da plataforma (BI) |
+| `GET`  | `/api/admin/workspaces`           | Lista todos os workspaces ignorando Tenants |
 
 ---
 
